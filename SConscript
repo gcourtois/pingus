@@ -70,7 +70,7 @@ class Project:
         self.opts.Add('CXX', 'C++ Compiler', 'g++')
     #   self.opts.Add('debug', 'Build with debugging options', 0)
     #   self.opts.Add('profile', 'Build with profiling support', 0)
-    
+
         self.opts.Add('CPPPATH',    'Additional preprocessor paths', [])
         self.opts.Add('LIBPATH',    'Additional library paths',      [])
         self.opts.Add('CPPFLAGS',   'Additional preprocessor flags', [])
@@ -91,9 +91,9 @@ class Project:
         self.env.Append(CXXFLAGS = ["-std=c++0x"])
         self.env.Append(CPPDEFINES = [('VERSION', '"\\"%s\\""' % package_version)])
         self.env.Append(CPPPATH = ['src/'])
-        
+
         Help(self.opts.GenerateHelpText(self.env))
-                
+
 
         self.conf = self.env.Configure(custom_tests = {
             'CheckMyProgram' : CheckMyProgram,
@@ -113,7 +113,7 @@ class Project:
             print self.fatal_error
             Exit(1)
 
-    def configure_gxx(self): 
+    def configure_gxx(self):
         # FIXME: Seems to require a rather new version of SCons
         ret = self.conf.CheckBuilder(context, None, "C++")
         if ret != "":
@@ -123,8 +123,8 @@ class Project:
         if not self.env['with_opengl']:
             self.reports += "  * OpenGL support: disabled\n"
         else:
-            self.reports += "  * OpenGL support: enabled\n"           
-            self.conf.env.Append(optional_sources = ['src/engine/display/opengl/opengl_framebuffer_surface_impl.cpp', 
+            self.reports += "  * OpenGL support: enabled\n"
+            self.conf.env.Append(optional_sources = ['src/engine/display/opengl/opengl_framebuffer_surface_impl.cpp',
                                                      'src/engine/display/opengl/opengl_framebuffer.cpp' ])
             if sys.platform == "darwin":
                 self.conf.env.Append(LINKFLAGS = [ '-framework', 'OpenGL', '-framework', 'Cocoa' ])
@@ -142,7 +142,7 @@ class Project:
 
     def configure_wiimote(self):
         if not self.env['with_wiimote']:
-            self.reports += "  * Wiimote support: disabled\n"        
+            self.reports += "  * Wiimote support: disabled\n"
         elif self.conf.CheckLibWithHeader('cwiid', 'cwiid.h', 'c++'):
             self.reports += "  * Wiimote support: yes\n"
             self.conf.env.Append(CPPDEFINES = [('HAVE_CWIID', 1)])
@@ -163,7 +163,7 @@ class Project:
             self.conf.env.Append(LIBS = ['Xi'])
             self.conf.env.Append(optional_sources = ['src/engine/input/xinput/xinput_driver.cpp',
                                                      'src/engine/input/xinput/xinput_device.cpp'])
-            
+
     def configure_boost(self):
         if not self.conf.CheckHeader('boost/signals2.hpp', '<>', 'c++'):
             self.fatal_error += "  * library 'boost_signals2' not found\n"
@@ -196,7 +196,7 @@ class Project:
                                      CPPPATH = ['/Library/Frameworks/SDL_mixer.framework/Headers/'])
             else:
                 self.fatal_error += "  * couldn't find sdl-config, SDL missing\n"
-                
+
     def configure_iconv(self):
         iconv_const = self.conf.CheckIconv()
         if iconv_const == False:
@@ -207,11 +207,11 @@ class Project:
 
     def build(self):
         self.env.Append(CPPPATH = ['.', 'src/',
-                                   'external/tinygettext/',
+                                   'external/tinygettext/include/',
                                    'external/logmich/include/'])
 
         libpingus = self.env.StaticLibrary('pingus',
-                                           Glob('external/tinygettext/tinygettext/*.cpp') + \
+                                           Glob('external/tinygettext/src/*.cpp') + \
                                            Glob('external/logmich/src/*.cpp') + \
                                            Glob('src/editor/*.cpp') + \
                                            Glob('src/engine/display/*.cpp') + \
